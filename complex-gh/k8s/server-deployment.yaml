@@ -17,6 +17,6 @@ spec:
           image: stephengrider/multi-server
           ports:
             - containerPort: 5000
-          envFrom:
-            - configMapRef:
-              name: server-config
+          # envFrom:
+          #   - configMapRef:
+          #     name: server-config
