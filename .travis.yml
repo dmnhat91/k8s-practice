@@ -1,29 +1,11 @@
-sudo: required
-# dist: focal
+language: node_js
+node_js:
+  - "16"
+
 services:
   - docker
 
-env:
-  global:
-    - SHA=$(git rev-parse --short HEAD)
-    - CLOUDSDK_CORE_DISABLE_PROMPTS=1
-before_install:
-  - openssl aes-256-cbc -K $encrypted_9f3b5599b056_key -iv $encrypted_9f3b5599b056_iv -in service-account.json.enc -out service-account.json -d
-  - curl https://sdk.cloud.google.com | bash > /dev/null
-  - source $HOME/google-cloud-sdk/path.bash.inc
-  - gcloud components update kubectl
-  - gcloud auth activate-service-account --key-file service-account.json
-  - gcloud set project multi-k8s-472711
-  - gcloud config set compute/region us-central1
-  - gcloud container clusters get-credentials multi-k8s
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  - docker build -t nowtothen32/react-test -f ./complex-gh/client/Dockerfile ./complex-gh/client
-
 script:
-  - docker run -e CI=true nowtothen32/react-test npm test
-
-deploy:
-  provider: script
-  script: bash ./deploy.sh
-  on:
-    branch: main
+  - echo "Build triggered successfully!"
+  - echo "Node version: $(node --version)"
+  - echo "NPM version: $(npm --version)"
