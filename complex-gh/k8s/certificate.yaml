@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: domaincuatui-space-tls
+spec:
+  secretName: domaincuatui-space
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: domaincuatui.space
+  dnsNames:
+    - domaincuatui.space
+    - www.domaincuatui.space
