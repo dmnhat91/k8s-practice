@@ -1,0 +1,135 @@
+---
+# Web Server Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-server
+  labels:
+    app: web-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-server
+  template:
+    metadata:
+      labels:
+        app: web-server
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: html-content
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: html-content
+        configMap:
+          name: web-server-content
+---
+# Web Server Content ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-server-content
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>K8s Test Web Server</title>
+    </head>
+    <body>
+        <h1>Hello from Kubernetes!</h1>
+        <p>This is a test web server running in a pod.</p>
+        <p>Timestamp: <span id="timestamp"></span></p>
+        <script>
+            document.getElementById('timestamp').textContent = new Date().toISOString();
+        </script>
+    </body>
+    </html>
+---
+# Web Server Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-server-service
+  labels:
+    app: web-server
+spec:
+  selector:
+    app: web-server
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  type: ClusterIP
+---
+# Client Deployment (for testing connectivity)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-client
+  labels:
+    app: test-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-client
+  template:
+    metadata:
+      labels:
+        app: test-client
+    spec:
+      containers:
+      - name: curl-client
+        image: curlimages/curl:latest
+        command: ["/bin/sh"]
+        args: ["-c", "while true; do echo 'Testing connectivity...'; curl -s http://web-server-service/; sleep 10; done"]
+---
+# Client Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-client-service
+  labels:
+    app: test-client
+spec:
+  selector:
+    app: test-client
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  type: ClusterIP
+---
+# Network Policy (optional - allows communication between services)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: test-network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: web-server
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: test-client
+    ports:
+    - protocol: TCP
+      port: 80
+
+# kubectl apply -f test-network.yaml
+# kubectl logs -l app=test-client
+
+# Get into the test client pod
+# kubectl exec -it deployment/test-client -- /bin/sh
+# Inside the pod, test connectivity
+# curl http://web-server-service/
