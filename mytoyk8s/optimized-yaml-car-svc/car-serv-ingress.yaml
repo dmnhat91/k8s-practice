@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: car-serv-ingress
+  namespace: car-svc
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: car-serv-onpre.rainscales.xyz
+      http:
+        paths:
+          - backend:
+              service:
+                name: car-serv-service
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix

@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: car-svc-deployment
+  name: car-serv-deployment
+  namespace: car-svc
+spec:
+  replicas: 4
+  strategy:
+    # type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  revisionHistoryLimit: 11
+  selector:
+    matchLabels:
+      app: car-svc-deployment
+  template:
+    metadata:
+      labels:
+        app: car-svc-deployment
+      namespace: car-svc
+    spec:
+      containers:
+        # - image: elroydevops/car-serv
+        - image: nginx
+          imagePullPolicy: Always
+          name: car-serv
+          ports:
+            - containerPort: 80
+              name: tcp
+              protocol: TCP
