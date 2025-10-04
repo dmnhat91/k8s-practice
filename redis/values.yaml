@@ -1,5 +1,11 @@
 architecture: replication
 
+image:
+  registry: docker.io
+  repository: bitnamilegacy/redis
+  tag: 8.2.1-debian-12-r0
+  pullPolicy: Always
+  
 auth:
   enabled: true
   password: "devopseduvn"
@@ -19,5 +25,10 @@ replica:
 
 # đảm bảo khả năng failover
 sentinel:
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/redis-sentinel
+    tag: 8.2.1-debian-12-r0
+    pullPolicy: Always
   enabled: true
   replicas: 3
