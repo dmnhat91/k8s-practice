@@ -3,7 +3,7 @@ architecture: replication
 image:
   registry: docker.io
   repository: bitnamilegacy/redis
-  tag: 8.2.1-debian-12-r0
+  tag: 7.4.1-debian-12-r0
   pullPolicy: Always
   
 auth:
@@ -28,7 +28,7 @@ sentinel:
   image:
     registry: docker.io
     repository: bitnamilegacy/redis-sentinel
-    tag: 8.2.1-debian-12-r0
+    tag: 7.4.1-debian-12-r0
     pullPolicy: Always
   enabled: true
   replicas: 3
