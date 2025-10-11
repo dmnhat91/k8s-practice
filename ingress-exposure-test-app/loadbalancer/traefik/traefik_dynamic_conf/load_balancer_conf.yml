@@ -1,0 +1,29 @@
+http:
+  routers:
+    nginx-test:
+      rule: Host(`nginx.domaincuatui.space`)
+      entryPoints:
+        - "websecure"
+      middlewares:
+        - nginx-test-middleware
+      service: nginx-test-service
+      tls:
+        certResolver: "lets-encrypt"
+
+  middlewares:
+    nginx-test-middleware:
+      headers:
+        customRequestHeaders:
+          X-Real-IP: true
+          X-Forwarded-For: true
+        customResponseHeaders:
+          X-Forwarded-Proto: true
+
+  services:
+    nginx-test-service:
+      loadBalancer:
+        servers:
+          - url: "http://172.31.17.137:30080"
+        passHostHeader: true
+        sticky:
+          cookie: {}

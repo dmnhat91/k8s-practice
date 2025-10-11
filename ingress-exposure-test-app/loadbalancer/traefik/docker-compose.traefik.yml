@@ -1,0 +1,25 @@
+services:
+  traefik:
+    image: "traefik:v2.11"
+    container_name: "traefik"
+    command:
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedByDefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entryPoints.websecure.address=:443"
+      - "--certificatesResolvers.lets-encrypt.acme.email=test@rainscales.com"
+      - "--certificatesResolvers.lets-encrypt.acme.tlsChallenge=true"
+      - "--certificatesResolvers.lets-encrypt.acme.storage=/letsencrypt/acme.json"
+      - "--providers.file.directory=/etc/traefik/config"
+      - "--providers.file.watch=true"
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt:/letsencrypt"
+      - "./traefik_dynamic_conf/:/etc/traefik/config/:ro"
